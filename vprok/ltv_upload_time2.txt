@@ -1,0 +1,5 @@
+В таблицу vprok.staging_ltv добавлено 9134 строк
+
+real    0m1.863s
+user    0m1.506s
+sys     0m0.233s

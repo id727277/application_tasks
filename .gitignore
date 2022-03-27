@@ -55,3 +55,4 @@ venv/
 # Other
 credentials.py
 LTV.csv
+*.xlsx
