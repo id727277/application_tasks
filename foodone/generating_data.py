@@ -15,8 +15,21 @@ faked_tr = defaultdict(list)
 faked_pr = defaultdict(list)
 faked_or = defaultdict(list)
 
+#generating fake users
 
-def generate_warehouses(size=30):
+def create_users(amount):
+    
+    dd = defaultdict(list)
+    for _ in range(amount):
+        dd['user_id'].append(fake.uuid4())
+    
+    return pd.DataFrame(dd)
+
+fake_users = create_users(1500) 
+
+
+
+def generate_warehouses(size=2):
 
     for _ in range(size):
         faked_wh['warehouse_id'].append(fake.bothify(text='####'))
@@ -32,8 +45,8 @@ def generate_transactions(warehouse_ids, size=5000):
         faked_tr['created_at'].append(fake.date_time_between(start_date=datetime(2022,1,1, 00,00,00)))
         faked_tr['picked_at'].append(fake.date_time_between_dates(datetime_start=faked_tr['created_at'][_], datetime_end=faked_tr['created_at'][_]+timedelta(minutes=10)))
         faked_tr['delivered_at'].append(fake.date_time_between_dates(datetime_start=faked_tr['picked_at'][_], datetime_end=faked_tr['picked_at'][_]+timedelta(minutes=15)))
-        faked_tr['user_id'].append(fake.uuid4())
-        faked_tr['total'].append(fake.randomize_nb_elements(number = 300, min=200, max=500))
+        faked_tr['user_id'].append(fake.random_element(elements=fake_users['user_id']))
+        faked_tr['total'].append(fake.randomize_nb_elements(number = 50, min=15, max=75))
         faked_tr['warehouse_id'].append(fake.random_element(elements=warehouse_ids))
 
     return pd.DataFrame(faked_tr)
@@ -47,7 +60,7 @@ def generating_products():
     for _ in range(len(pr_source)):
         faked_pr['product_id'].append(1000 + _)
         faked_pr['product_name'].append(fake.random_element(elements=pr_source['Product Name']))
-        faked_pr['cost'].append(fake.randomize_nb_elements(number = 50, min=20, max= 70))
+        faked_pr['cost'].append(fake.randomize_nb_elements(number = 10, min=2, max= 15))
 
     return pd.DataFrame(faked_pr)
 
@@ -58,12 +71,9 @@ def generate_orders(orders, products):
         faked_or['order_id'].append(fake.random_element(orders))
         faked_or['product_id'].append(fake.random_element(products))
         faked_or['qty'].append(fake.random_number(digits=1, fix_len=True))
-        faked_or['price_per_unit'].append(fake.randomize_nb_elements(number=30, min=5, max=50))
+        faked_or['price_per_unit'].append(fake.randomize_nb_elements(number=30, min=15, max=50))
 
     return pd.DataFrame(faked_or)
-
-
-
 
 
 def insert_data(dfs):
@@ -83,8 +93,8 @@ def insert_data(dfs):
         print(f"В таблицу {my_schema}.{tables[_]} добавлено {result['count'][0]} строк")
 
 
-df_warehouse = generate_warehouses(30)
-df_transactions = generate_transactions(df_warehouse['warehouse_id'], 10000)
+df_warehouse = generate_warehouses()
+df_transactions = generate_transactions(df_warehouse['warehouse_id'], 5000)
 df_products = generating_products()
 df_orders = generate_orders(df_transactions['order_id'], df_products['product_id'])
 
