@@ -56,3 +56,5 @@ venv/
 credentials.py
 LTV.csv
 *.xlsx
+.~lock.*
+data_analyst_case.docx
